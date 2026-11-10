@@ -1,0 +1,29 @@
+[project]
+name = "data-engineering-zoomcamp-docker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "rafaelkrambek", email = "43215035+rafaelkrambek@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "pandas>=3.1.1",
+    "psycopg[binary,pool]>=3.3.8",
+    "pyarrow>=26.0.1",
+    "sqlalchemy>=2.1.8",
+    "tqdm>=4.70.1",
+]
+
+[project.scripts]
+data-engineering-zoomcamp-docker = "data_engineering_zoomcamp_docker:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "jupyter>=1.1.1",
+    "pgcli>=4.7.1",
+]
