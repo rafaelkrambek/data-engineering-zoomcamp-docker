@@ -1,22 +1,19 @@
-# Start with slim Python 3.13 image
-FROM python:3.13.10-slim
+FROM python:3.13-slim
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvbin/
 
-# Copy uv binary from official uv image (multi-stage build pattern)
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
+# Adiciona o uv e o ambiente virtual gerado ao PATH
+ENV PATH="/code/.venv/bin:/uvbin:$PATH"
 
-# Set working directory
-WORKDIR /app
+WORKDIR /code
 
-# Add virtual environment to PATH so we can use installed packages
-ENV PATH="/app/.venv/bin:$PATH"
+# Copia os arquivos de configuração de dependências
+COPY pyproject.toml .python-version uv.lock ./
 
-# Copy dependency files first (better layer caching)
-COPY "pyproject.toml" "uv.lock" ".python-version" ./
-# Install dependencies from lock file (ensures reproducible builds)
-RUN uv sync --locked
+# Instala as dependências no .venv (/code/.venv)
+RUN uv sync --frozen --no-dev --no-install-project
 
-# Copy application code
-COPY pipeline.py pipeline.py
+# Copia o script de ingestão
+COPY ingest_data.py .
 
-# Set entry point
-ENTRYPOINT ["uv", "run", "python", "pipeline.py"]
+# Como o PATH já aponta para o .venv, basta chamar python diretamente
+ENTRYPOINT ["python", "ingest_data.py"]
